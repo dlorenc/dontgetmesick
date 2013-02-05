@@ -6,6 +6,6 @@ import webapp2
 from google.appengine.ext import db
 
 Class sick(db.Model):
-	sickPerson = db.StringProperty()
-	boss = db.StringProperty()
+	sickPerson = db.EmailProperty()
+	boss = db.EmailProperty()
 	date = db.DateTimeProperty(auto_now_add=True)
