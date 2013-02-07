@@ -7,7 +7,7 @@ import datastore
 from google.appengine.ext import db
 
 class Mail(webapp.RequestHandler):
-	def post(self):
+	def get(self):
 		sickP = self.request.get('sickP')
 		boss = self.request.get('boss')
 
