@@ -13,18 +13,18 @@ class Mail(webapp.RequestHandler):
 
 		s = sick(sickPerson=Mail(user), sickPersonsBoss=Mail(boss))
 
-	q = db.Query(sick).filter('sickperson=', sickP).order('-date')
+		q = db.Query(sick).filter('sickperson=', sickP).order('-date')
 
-	result = q.get()
+		result = q.get()
 
-	if (result == None):
-		##automatically send email if no results
-		s.put() ##put new entry in db
+		if (result == None):
+			##automatically send email if no results
+			s.put() ##put new entry in db
 
-	elif ((result.date - datetime.now()) > timedelta (hours = 8)):
-		##Send Email if the most recent entry is more than 8 hours old
-		s.put() ##put new entry in db
+		elif ((result.date - datetime.now()) > timedelta (hours = 8)):
+			##Send Email if the most recent entry is more than 8 hours old
+			s.put() ##put new entry in db
 
-	else:
-		s.put() ##put new entry in db, optional
-		##redirect to page saying email has already been sent
+		else:
+			s.put() ##put new entry in db, optional
+			##redirect to page saying email has already been sent
