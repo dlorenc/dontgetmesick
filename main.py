@@ -17,6 +17,11 @@
 import webapp2
 import jinja2
 import os
+import datetime
+import timedelta
+import datastore
+
+from google.appengine.ext import db
 
 template_path = os.path.join(os.path.dirname(__file__),
     'templates')
@@ -31,6 +36,31 @@ class MainHandler(webapp2.RequestHandler):
         template = jinja_environment.get_template('main.html')
         self.response.out.write(template.render(context))
 
+##Handler for the mail requests
+class MailHandler(webapp2.RequestHandler):
+	def get(self):
+		sickP = self.request.get('sickP')
+		boss = self.request.get('boss')
+
+		s = sick(sickPerson=Mail(sickP), sickPersonsBoss=Mail(boss))
+
+		q = db.Query(sick).filter('sickperson=', sickP).order('-date')
+
+		result = q.get()
+
+		if (result == None):
+			##automatically send email if no results
+			s.put() ##put new entry in db
+
+		elif ((result.date - datetime.now()) > timedelta (hours = 8)):
+			##Send Email if the most recent entry is more than 8 hours old
+			s.put() ##put new entry in db
+
+		else:
+			s.put() ##put new entry in db, optional
+			##redirect to page saying email has already been sent
+
 app = webapp2.WSGIApplication([
     ('/', MainHandler)
+    ('/submit', MailHandler)
 ], debug=True)
