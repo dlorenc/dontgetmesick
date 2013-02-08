@@ -44,7 +44,7 @@ class MailHandler(webapp2.RequestHandler):
 
 		s = sick(sickPerson=Mail(sickP), sickPersonsBoss=Mail(boss))
 
-		q = db.Query(sick).filter('sickperson=', sickP).order('-date')
+		q = db.Query(sick).filter('sickperson=', sickP).order('-date') ##might need to be Mail(sickP)
 
 		result = q.get()
 
