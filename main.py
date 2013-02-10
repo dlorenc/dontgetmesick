@@ -19,7 +19,7 @@ import jinja2
 import os
 import datetime
 import timedelta
-import datastore
+from datastore import sick
 
 from google.appengine.ext import db
 
