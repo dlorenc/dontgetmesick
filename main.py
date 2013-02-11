@@ -40,11 +40,12 @@ class MainHandler(webapp2.RequestHandler):
 class MailHandler(webapp2.RequestHandler):
 	def get(self):
 		sickP = self.request.get('sickP')
+		sickPName = self.request.get('sickPName')
 		boss = self.request.get('boss')
 
-		s = sick(sickPerson=Mail(sickP), sickPersonsBoss=Mail(boss))
+		s = sick(sickPerson=Mail(sickP), sickPersonName=sickPName, sickPersonsBoss=Mail(boss))
 
-		q = db.Query(sick).filter('sickperson=', sickP).order('-date') ##might need to be Mail(sickP)
+		q = db.Query(sick).filter('sickPerson=', sickP).order('-date') ##might need to be Mail(sickP)
 
 		result = q.get()
 
