@@ -5,8 +5,8 @@ import webapp2
 
 from google.appengine.ext import db
 
-Class sick(db.Model):
-	sickPerson = db.EmailProperty(required=True)
-	sickPersonName = db.StringProperty(required=True)
-	sickPersonsBoss = db.EmailProperty(required=True)
-	date = db.DateTimeProperty(auto_now_add=True)
+class Sick(db.Model):
+    sick_person_email = db.EmailProperty(required=True)
+    sick_person_name = db.StringProperty(required=True)
+    boss_email = db.EmailProperty(required=True)
+    date = db.DateTimeProperty(auto_now_add=True)

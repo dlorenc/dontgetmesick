@@ -18,8 +18,7 @@ import webapp2
 import jinja2
 import os
 import datetime
-import timedelta
-from datastore import sick
+from datastore import Sick
 
 from google.appengine.ext import db
 
@@ -31,37 +30,37 @@ jinja_environment = jinja2.Environment(
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
-        # self.response.out.write("Hello, world!")
         context = {}
         template = jinja_environment.get_template('main.html')
         self.response.out.write(template.render(context))
 
 ##Handler for the mail requests
 class MailHandler(webapp2.RequestHandler):
-	def get(self):
-		sickP = self.request.get('sickP')
-		sickPName = self.request.get('sickPName')
-		boss = self.request.get('boss')
+    def post(self):
+        sick_person_name = self.request.get('sick_person_name')
+        sick_person_email = self.request.get('sick_person_email')
+        boss_email = self.request.get('boss_email')
 
-		s = sick(sickPerson=Mail(sickP), sickPersonName=sickPName, sickPersonsBoss=Mail(boss))
+        s = Sick(sick_person_name=sick_person_name,
+                 sick_person_email=db.Email(sick_person_email),
+                 boss_email=db.Email(boss_email))
 
-		q = db.Query(sick).filter('sickPerson=', sickP).order('-date') ##might need to be Mail(sickP)
 
-		result = q.get()
+        q = db.Query(Sick).filter('sick_person_email=',
+            db.Email(sick_person_email)).order('-date')
 
-		if (result == None):
-			##automatically send email if no results
-			s.put() ##put new entry in db
+        result = q.get()
+        s.put()
+        if (result == None):
+            print 'Send Email'
 
-		elif ((result.date - datetime.now()) > timedelta (hours = 8)):
-			##Send Email if the most recent entry is more than 8 hours old
-			s.put() ##put new entry in db
+        elif ((result.date - datetime.datetime.now()) > datetime.timedelta(hours=8)):
+            print 'Send Email'
 
-		else:
-			s.put() ##put new entry in db, optional
-			##redirect to page saying email has already been sent
+        else:
+            print 'Redirect'
 
 app = webapp2.WSGIApplication([
-    ('/', MainHandler)
+    ('/', MainHandler),
     ('/submit', MailHandler)
 ], debug=True)
