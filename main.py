@@ -99,7 +99,23 @@ class MailHandler(webapp2.RequestHandler):
         else:
             self.redirect('/already')  ##redirect to a page saying an email has already been sent
 
+##success page
+class SuccessHandler(webapp2.RequestHandler):
+    def get(self):
+        context = {}
+        template = jinja_environment.get_template('success.html')
+        self.response.out.write(template.render(context))
+
+##already page
+class AlreadyHandler(webapp2.RequestHandler):
+    def get(self):
+        context = {}
+        template = jinja_environment.get_template('already.html')
+        self.response.out.write(template.render(context))
+
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
-    ('/submit', MailHandler)
+    ('/submit', MailHandler),
+    ('/success', SuccessHandler),
+    ('/already', AlreadyHandler)
 ], debug=True)
