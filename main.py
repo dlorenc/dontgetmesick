@@ -36,7 +36,6 @@ class MainHandler(webapp2.RequestHandler):
         self.response.out.write(template.render(context))
 
 
-##Handler for the mail requests
 class MailHandler(webapp2.RequestHandler):
     def post(self):
         sick_person_name = self.request.get('sick_person_name')
@@ -91,9 +90,25 @@ class AlreadyHandler(webapp2.RequestHandler):
         template = jinja_environment.get_template('already.html')
         self.response.out.write(template.render(context))
 
+
+class AboutHandler(webapp2.RequestHandler):
+    def get(self):
+        context = {}
+        template = jinja_environment.get_template('about.html')
+        self.response.out.write(template.render(context))
+
+
+class ContactHandler(webapp2.RequestHandler):
+    def get(self):
+        context = {}
+        template = jinja_environment.get_template('contact.html')
+        self.response.out.write(template.render(context))
+
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/submit', MailHandler),
     ('/success', SuccessHandler),
-    ('/already', AlreadyHandler)
+    ('/already', AlreadyHandler),
+    ('/about', AboutHandler),
+    ('/contact', ContactHandler)
 ], debug=True)
