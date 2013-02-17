@@ -36,7 +36,7 @@ class MainHandler(webapp2.RequestHandler):
         self.response.out.write(template.render(context))
 
 
-class MailHandler(webapp2.RequestHandler):
+class SubmitHandler(webapp2.RequestHandler):
     def post(self):
         sick_person_name = self.request.get('sick_person_name')
         sick_person_email = self.request.get('sick_person_email')
@@ -106,7 +106,7 @@ class ContactHandler(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
-    ('/submit', MailHandler),
+    ('/submit', SubmitHandler),
     ('/success', SuccessHandler),
     ('/already', AlreadyHandler),
     ('/about', AboutHandler),
