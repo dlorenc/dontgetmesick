@@ -35,6 +35,7 @@ class MainHandler(webapp2.RequestHandler):
         template = jinja_environment.get_template('main.html')
         self.response.out.write(template.render(context))
 
+
 ##Handler for the mail requests
 class MailHandler(webapp2.RequestHandler):
     def post(self):
@@ -45,7 +46,6 @@ class MailHandler(webapp2.RequestHandler):
         s = Sick(sick_person_name=sick_person_name,
                  sick_person_email=db.Email(sick_person_email),
                  boss_email=db.Email(boss_email))
-
 
         q = db.Query(Sick).filter('sick_person_email=',
             db.Email(sick_person_email)).order('-date')
@@ -70,9 +70,9 @@ class MailHandler(webapp2.RequestHandler):
                     "employees, %s is sick" % sick_person_name +
                     "Some of %s's coworkers would appreciate it if you send" +
                     "%s home so no one else gets sick.\n\n" % sick_person_name +
-                    "Thank you,\n") +
+                    "Thank you,\n" +
                     "team@dontgetmesick.com")
-            self.redirect('/success')   ##redirect to success page
+            self.redirect('/success')
 
         elif ((result.date - datetime.datetime.now()) > datetime.timedelta(hours=8)):
             mail.send_mail(sender="Don't Get Me Sick <team@dontgetmesick.com>",
@@ -92,21 +92,21 @@ class MailHandler(webapp2.RequestHandler):
                     "employees, %s is sick" % sick_person_name +
                     "Some of %s's coworkers would appreciate it if you send" +
                     "%s home so no one else gets sick.\n\n" % sick_person_name +
-                    "Thank you,\n") +
+                    "Thank you,\n" +
                     "team@dontgetmesick.com")
-            self.redirect('/success')  ##redirect to success page
+            self.redirect('/success')
 
         else:
-            self.redirect('/already')  ##redirect to a page saying an email has already been sent
+            self.redirect('/already')
 
-##success page
+
 class SuccessHandler(webapp2.RequestHandler):
     def get(self):
         context = {}
         template = jinja_environment.get_template('success.html')
         self.response.out.write(template.render(context))
 
-##already page
+
 class AlreadyHandler(webapp2.RequestHandler):
     def get(self):
         context = {}
