@@ -43,15 +43,15 @@ class SubmitHandler(webapp2.RequestHandler):
         boss_email = self.request.get('boss_email')
 
         s = Sick(sick_person_name=sick_person_name,
-                 sick_person_email=db.Email(sick_person_email),
-                 boss_email=db.Email(boss_email))
+                 sick_person_email=sick_person_email,
+                 boss_email=boss_email)
 
-        q = db.Query(Sick).filter('sick_person_email=',
+        q = db.Query(Sick).filter('sick_person_email =',
             db.Email(sick_person_email)).order('-date')
 
         result = q.get()
         s.put()
-        if ((result == None) or (result.date - datetime.datetime.now()) > datetime.timedelta(hours=8)):
+        if ((result == None) or (datetime.datetime.now() - result.date) > datetime.timedelta(hours=8)):
             mail.send_mail(sender="Don't Get Me Sick <team@dontgetmesick.com>",
                 to="%s <%s>" % (sick_person_name, sick_person_email),
                 subject="Don't Get Me Sick",
