@@ -36,23 +36,22 @@ class MainHandler(webapp2.RequestHandler):
         self.response.out.write(template.render(context))
 
 
-##Handler for the mail requests
-class MailHandler(webapp2.RequestHandler):
+class SubmitHandler(webapp2.RequestHandler):
     def post(self):
         sick_person_name = self.request.get('sick_person_name')
         sick_person_email = self.request.get('sick_person_email')
         boss_email = self.request.get('boss_email')
 
         s = Sick(sick_person_name=sick_person_name,
-                 sick_person_email=db.Email(sick_person_email),
-                 boss_email=db.Email(boss_email))
+                 sick_person_email=sick_person_email,
+                 boss_email=boss_email)
 
-        q = db.Query(Sick).filter('sick_person_email=',
+        q = db.Query(Sick).filter('sick_person_email =',
             db.Email(sick_person_email)).order('-date')
 
         result = q.get()
         s.put()
-        if ((result == None) or (result.date - datetime.datetime.now()) > datetime.timedelta(hours=8)):
+        if ((result == None) or (datetime.datetime.now() - result.date) > datetime.timedelta(hours=8)):
             mail.send_mail(sender="Don't Get Me Sick <team@dontgetmesick.com>",
                 to="%s <%s>" % (sick_person_name, sick_person_email),
                 subject="Don't Get Me Sick",
@@ -91,9 +90,25 @@ class AlreadyHandler(webapp2.RequestHandler):
         template = jinja_environment.get_template('already.html')
         self.response.out.write(template.render(context))
 
+
+class AboutHandler(webapp2.RequestHandler):
+    def get(self):
+        context = {}
+        template = jinja_environment.get_template('about.html')
+        self.response.out.write(template.render(context))
+
+
+class ContactHandler(webapp2.RequestHandler):
+    def get(self):
+        context = {}
+        template = jinja_environment.get_template('contact.html')
+        self.response.out.write(template.render(context))
+
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
-    ('/submit', MailHandler),
+    ('/submit', SubmitHandler),
     ('/success', SuccessHandler),
-    ('/already', AlreadyHandler)
+    ('/already', AlreadyHandler),
+    ('/about', AboutHandler),
+    ('/contact', ContactHandler)
 ], debug=True)
