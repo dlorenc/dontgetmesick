@@ -52,7 +52,7 @@ class SubmitHandler(webapp2.RequestHandler):
         result = q.get()
         s.put()
         if ((result == None) or (datetime.datetime.now() - result.date) > datetime.timedelta(hours=8)):
-            mail.send_mail(sender="Don't Get Me Sick <team@dontgetmesick.com>",
+            mail.send_mail(sender="Don't Get Me Sick <dlorenc@dontgetmesick.com>",
                 to="%s <%s>" % (sick_person_name, sick_person_email),
                 subject="Don't Get Me Sick",
                 body="""Hello,
@@ -61,7 +61,7 @@ class SubmitHandler(webapp2.RequestHandler):
 
                     Thank you,
                     team@dontgetmesick.com""")
-            mail.send_mail(sender="Don't Get Me Sick <team@dontgetmesick.com>",
+            mail.send_mail(sender="Don't Get Me Sick <dlorenc@dontgetmesick.com>",
                 to="%s <%s>" % (boss_email, boss_email),
                 subject="Don't Get Me Sick",
                 body="""Hello,
