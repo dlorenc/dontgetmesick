@@ -52,25 +52,24 @@ class SubmitHandler(webapp2.RequestHandler):
         result = q.get()
         s.put()
         if ((result == None) or (datetime.datetime.now() - result.date) > datetime.timedelta(hours=8)):
-            mail.send_mail(sender="Don't Get Me Sick <team@dontgetmesick.com>",
+            mail.send_mail(sender="Don't Get Me Sick <dlorenc@dontgetmesick.com>",
                 to="%s <%s>" % (sick_person_name, sick_person_email),
                 subject="Don't Get Me Sick",
-                body="Hello,\n" +
-                    "Coming to work sick is bad. We've heard that you're sick." +
-                    "Your coworkers would appreciate it if you go home so" +
-                    "you don't get them sick.\n\n" +
-                    "Thank you,\n" +
-                    "team@dontgetmesick.com")
-            mail.send_mail(sender="Don't Get Me Sick <team@dontgetmesick.com>",
+                body="""Hello,
+                    Coming to work sick is bad. We've heard that you're sick.
+                    Your coworkers would appreciate it if you go home so you don't get them sick.
+
+                    Thank you,
+                    team@dontgetmesick.com""")
+            mail.send_mail(sender="Don't Get Me Sick <dlorenc@dontgetmesick.com>",
                 to="%s <%s>" % (boss_email, boss_email),
                 subject="Don't Get Me Sick",
-                body="Hello,\n" +
-                    "Coming to work sick is bad. We've heard that one of your" +
-                    "employees, %s is sick" % sick_person_name +
-                    "Some of %s's coworkers would appreciate it if you send" +
-                    "%s home so no one else gets sick.\n\n" % sick_person_name +
-                    "Thank you,\n" +
-                    "team@dontgetmesick.com")
+                body="""Hello,
+                    Coming to work sick is bad. We've heard that one of your employees, %s is sick.
+                    Some of %s's coworkers would appreciate it if you send %s home so no one else gets sick.
+
+                    Thank you,
+                    team@dontgetmesick.com""" % (sick_person_name, sick_person_name, sick_person_name))
             self.redirect('/success')
 
         else:
