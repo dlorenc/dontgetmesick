@@ -60,7 +60,14 @@ class SubmitHandler(webapp2.RequestHandler):
                     Your coworkers would appreciate it if you go home so you don't get them sick.
 
                     Thank you,
-                    team@dontgetmesick.com""")
+                    team@dontgetmesick.com""",
+                html="""<html><head></head><body>
+                    <p>Hello,<br />
+                    Coming to work sick is bad. We've heard that you're sick.<br />
+                    Your coworkers would appreciate it if you go home so you don't get them sick.</p>
+
+                    <p>Thank you,<br />
+                    team@dontgetmesick.com</p></body></html>""")
             mail.send_mail(sender="Don't Get Me Sick <dlorenc@dontgetmesick.com>",
                 to="%s <%s>" % (boss_email, boss_email),
                 subject="Don't Get Me Sick",
@@ -69,7 +76,14 @@ class SubmitHandler(webapp2.RequestHandler):
                     Some of %s's coworkers would appreciate it if you send %s home so no one else gets sick.
 
                     Thank you,
-                    team@dontgetmesick.com""" % (sick_person_name, sick_person_name, sick_person_name))
+                    team@dontgetmesick.com""" % (sick_person_name, sick_person_name, sick_person_name),
+                html="""<html><head></head><body>
+                    <p>Hello,<br />
+                    Coming to work sick is bad. We've heard that one of your employees, %s is sick.<br />
+                    Some of %s's coworkers would appreciate it if you send %s home so no one else gets sick.</p>
+
+                    <p>Thank you,<br />
+                    team@dontgetmesickk.com</p></body></html>""" % (sick_person_name, sick_person_name, sick_person_name))
             self.redirect('/success')
 
         else:
