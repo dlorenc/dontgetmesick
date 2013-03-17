@@ -39,7 +39,7 @@ class MainHandler(webapp2.RequestHandler):
     def get(self):
         chtml = captcha.displayhtml(
             public_key="6Lehdd4SAAAAAGyshD-jrfSNV1bV_InTDmtR62Sn",
-            use_ssl=False,
+            use_ssl=True,
             error=None)
         context = {'captchahtml': chtml}
         template = jinja_environment.get_template('main.html')
@@ -109,7 +109,6 @@ class SubmitHandler(webapp2.RequestHandler):
                 self.redirect('/already')
         else:
             self.redirect('/failure')
-
 
 
 class SuccessHandler(webapp2.RequestHandler):

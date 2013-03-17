@@ -59,7 +59,7 @@ def submit(recaptcha_challenge_field,
     })
 
     httpresp = urlfetch.fetch(
-        url="http://%s/recaptcha/api/verify" % VERIFY_SERVER,
+        url="https://%s/recaptcha/api/verify" % VERIFY_SERVER,
         payload=params,
         method=urlfetch.POST,
         headers=headers)
