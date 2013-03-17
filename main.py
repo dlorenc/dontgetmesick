@@ -18,10 +18,13 @@ import webapp2
 import jinja2
 import os
 import datetime
+import logging
 from datastore import Sick
 
 from google.appengine.ext import db
 from google.appengine.api import mail
+from google.appengine.runtime import apiproxy_errors
+
 
 template_path = os.path.join(os.path.dirname(__file__),
     'templates')
@@ -52,40 +55,43 @@ class SubmitHandler(webapp2.RequestHandler):
         result = q.get()
         s.put()
         if ((result == None) or (datetime.datetime.now() - result.date) > datetime.timedelta(hours=8)):
-            mail.send_mail(sender="Don't Get Me Sick <dlorenc@dontgetmesick.com>",
-                to="%s <%s>" % (sick_person_name, sick_person_email),
-                subject="Don't Get Me Sick",
-                body="""Hello,
-                    Coming to work sick is bad. We've heard that you're sick.
-                    Your coworkers would appreciate it if you go home so you don't get them sick.
+            try:
+                mail.send_mail(sender="Don't Get Me Sick <dlorenc@dontgetmesick.com>",
+                    to="%s <%s>" % (sick_person_name, sick_person_email),
+                    subject="Don't Get Me Sick",
+                    body="""Hello,
+                        Coming to work sick is bad. We've heard that you're sick.
+                        Your coworkers would appreciate it if you go home so you don't get them sick.
 
-                    Thank you,
-                    team@dontgetmesick.com""",
-                html="""<html><head></head><body>
-                    <p>Hello,<br />
-                    Coming to work sick is bad. We've heard that you're sick.<br />
-                    Your coworkers would appreciate it if you go home so you don't get them sick.</p>
+                        Thank you,
+                        team@dontgetmesick.com""",
+                    html="""<html><head></head><body>
+                        <p>Hello,<br />
+                        Coming to work sick is bad. We've heard that you're sick.<br />
+                        Your coworkers would appreciate it if you go home so you don't get them sick.</p>
 
-                    <p>Thank you,<br />
-                    team@dontgetmesick.com</p></body></html>""")
-            mail.send_mail(sender="Don't Get Me Sick <dlorenc@dontgetmesick.com>",
-                to="%s <%s>" % (boss_email, boss_email),
-                subject="Don't Get Me Sick",
-                body="""Hello,
-                    Coming to work sick is bad. We've heard that one of your employees, %s is sick.
-                    Some of %s's coworkers would appreciate it if you send %s home so no one else gets sick.
+                        <p>Thank you,<br />
+                        team@dontgetmesick.com</p></body></html>""")
+                mail.send_mail(sender="Don't Get Me Sick <dlorenc@dontgetmesick.com>",
+                    to="%s <%s>" % (boss_email, boss_email),
+                   subject="Don't Get Me Sick",
+                    body="""Hello,
+                        Coming to work sick is bad. We've heard that one of your employees, %s is sick.
+                        Some of %s's coworkers would appreciate it if you send %s home so no one else gets sick.
 
-                    Thank you,
-                    team@dontgetmesick.com""" % (sick_person_name, sick_person_name, sick_person_name),
-                html="""<html><head></head><body>
-                    <p>Hello,<br />
-                    Coming to work sick is bad. We've heard that one of your employees, %s is sick.<br />
-                    Some of %s's coworkers would appreciate it if you send %s home so no one else gets sick.</p>
+                        Thank you,
+                        team@dontgetmesick.com""" % (sick_person_name, sick_person_name, sick_person_name),
+                    html="""<html><head></head><body>
+                        <p>Hello,<br />
+                        Coming to work sick is bad. We've heard that one of your employees, %s is sick.<br />
+                        Some of %s's coworkers would appreciate it if you send %s home so no one else gets sick.</p>
 
-                    <p>Thank you,<br />
-                    team@dontgetmesickk.com</p></body></html>""" % (sick_person_name, sick_person_name, sick_person_name))
-            self.redirect('/success')
-
+                        <p>Thank you,<br />
+                        team@dontgetmesickk.com</p></body></html>""" % (sick_person_name, sick_person_name, sick_person_name))
+                self.redirect('/success')
+            except apiproxy_errors.OverQuotaError, message:
+                logging.error(message)
+                self.redirect('/failure')
         else:
             self.redirect('/already')
 
@@ -94,6 +100,13 @@ class SuccessHandler(webapp2.RequestHandler):
     def get(self):
         context = {}
         template = jinja_environment.get_template('success.html')
+        self.response.out.write(template.render(context))
+
+
+class FailureHandler(webapp2.RequestHandler):
+    def get(self):
+        context = {}
+        template = jinja_environment.get_template('failure.html')
         self.response.out.write(template.render(context))
 
 
@@ -121,6 +134,7 @@ app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/submit', SubmitHandler),
     ('/success', SuccessHandler),
+    ('/failure', FailureHandler),
     ('/already', AlreadyHandler),
     ('/about', AboutHandler),
     ('/contact', ContactHandler)
