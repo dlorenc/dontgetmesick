@@ -18,7 +18,6 @@ import webapp2
 import jinja2
 import os
 import datetime
-import logging
 from datastore import Sick
 
 from google.appengine.ext import db
@@ -56,54 +55,53 @@ class SubmitHandler(webapp2.RequestHandler):
         remoteip = environ['REMOTE_ADDR']
 
         cResponse = captcha.submit(challenge, response,
-                                   "6Lehdd4SAAAAAC0TKPW2gRxaly1HErcicR1Sck5P",
-                                   remoteip)
+            "6Lehdd4SAAAAAC0TKPW2gRxaly1HErcicR1Sck5P",
+            remoteip)
 
         if cResponse.is_valid:
             s = Sick(sick_person_name=sick_person_name,
-                     sick_person_email=sick_person_email,
-                     boss_email=boss_email)
+                sick_person_email=sick_person_email,
+                boss_email=boss_email)
 
             q = db.Query(Sick).filter('sick_person_email =',
-                                      db.Email(sick_person_email)).order('-date')
+                db.Email(sick_person_email)).order('-date')
 
             result = q.get()
             s.put()
             if ((result is None) or (datetime.datetime.now() - result.date) > datetime.timedelta(hours=8)):
                 try:
                     mail.send_mail(sender="Don't Get Me Sick <dlorenc@dontgetmesick.com>",
-                                   to="%s <%s>" % (sick_person_name, sick_person_email),
-                                   subject="Don't Get Me Sick",
-                                   body="""Hello,
-                                      Coming to work sick is bad. We've heard that you're sick.
-                                      Your coworkers would appreciate it if you go home so you don't get them sick.
+                        to="%s <%s>" % (sick_person_name, sick_person_email),
+                        subject="Don't Get Me Sick",
+                        body="""Hello,
+                            Coming to work sick is bad. We've heard that you're sick.
+                            Your coworkers would appreciate it if you go home so you don't get them sick.
 
-                                      Thank you,
-                                      team@dontgetmesick.com""",
-                                   html="""<html><head></head><body>
-                                        <p>Hello,</p>
-                                        <p>Coming to work sick is bad. We've heard that you're sick.<br />
-                                        Your coworkers would appreciate it if you go home so you don't get them sick.</p>
-                                       <p>Thank you,<br />
-                                       team@dontgetmesick.com</p></body></html>""")
+                            Thank you,
+                            team@dontgetmesick.com""",
+                        html="""<html><head></head><body>
+                            <p>Hello,</p>
+                            <p>Coming to work sick is bad. We've heard that you're sick.<br />
+                            Your coworkers would appreciate it if you go home so you don't get them sick.</p>
+                            <p>Thank you,<br />
+                            team@dontgetmesick.com</p></body></html>""")
                     mail.send_mail(sender="Don't Get Me Sick <dlorenc@dontgetmesick.com>",
-                                   to="%s <%s>" % (boss_email, boss_email),
-                                   subject="Don't Get Me Sick",
-                                   body="""Hello,
-                                        Coming to work sick is bad. We've heard that one of your employees, %s is sick.
-                                        Some of %s's coworkers would appreciate it if you send %s home so no one else gets sick.
+                        to="%s <%s>" % (boss_email, boss_email),
+                        subject="Don't Get Me Sick",
+                        body="""Hello,
+                            Coming to work sick is bad. We've heard that one of your employees, %s is sick.
+                            Some of %s's coworkers would appreciate it if you send %s home so no one else gets sick.
 
-                                        Thank you,
-                                        team@dontgetmesick.com""" % (sick_person_name, sick_person_name, sick_person_name),
-                                   html="""<html><head></head><body>
-                                        <p>Hello,</p>
-                                        <p>Coming to work sick is bad. We've heard that one of your employees, %s is sick.<br />
-                                        Some of %s's coworkers would appreciate it if you send %s home so no one else gets sick.</p>
-                                        <p>Thank you,<br />
-                                        team@dontgetmesickk.com</p></body></html>""" % (sick_person_name, sick_person_name, sick_person_name))
+                            Thank you,
+                            team@dontgetmesick.com""" % (sick_person_name, sick_person_name, sick_person_name),
+                        html="""<html><head></head><body>
+                            <p>Hello,</p>
+                            <p>Coming to work sick is bad. We've heard that one of your employees, %s is sick.<br />
+                            Some of %s's coworkers would appreciate it if you send %s home so no one else gets sick.</p>
+                            <p>Thank you,<br />
+                            team@dontgetmesickk.com</p></body></html>""" % (sick_person_name, sick_person_name, sick_person_name))
                     self.redirect('/success')
-                except apiproxy_errors.OverQuotaError, message:
-                    logging.error(message)
+                except apiproxy_errors.OverQuotaError:
                     self.redirect('/overage')
             else:
                 self.redirect('/already')
@@ -151,6 +149,7 @@ class ContactHandler(webapp2.RequestHandler):
         context = {}
         template = jinja_environment.get_template('contact.html')
         self.response.out.write(template.render(context))
+
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),

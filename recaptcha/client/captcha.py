@@ -8,12 +8,11 @@ VERIFY_SERVER = "www.google.com"
 
 class RecaptchaResponse(object):
     def __init__(self, is_valid):
-                    self.is_valid = is_valid
+        self.is_valid = is_valid
 
 
 def displayhtml(public_key,
-                use_ssl=False,
-                error=None):
+        use_ssl=False, error=None):
     error_param = ''
     if error:
         error_param = '&error=%s' % error
@@ -33,9 +32,9 @@ def displayhtml(public_key,
 
 
 def submit(recaptcha_challenge_field,
-           recaptcha_response_field,
-           private_key,
-           remoteip):
+        recaptcha_response_field,
+        private_key,
+        remoteip):
 
     if not (recaptcha_response_field and recaptcha_challenge_field and
             len(recaptcha_response_field) and len(recaptcha_challenge_field)):

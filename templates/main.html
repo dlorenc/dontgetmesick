@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Don't Get Me Sick{% endblock %}
 {% block content %}
-<form action="/submit" method="POST">
+<form name="SickForm" action="/submit" method="POST" onsubmit="return required()">
     <label>Sick Person's Name:</label>
     <input type="text" name="sick_person_name">
     <label>Sick Person's Email:</label>
