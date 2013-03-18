@@ -3,16 +3,17 @@ from google.appengine.api import urlfetch
 
 API_SSL_SERVER = "https://www.google.com/recaptcha/api"
 API_SERVER = "http://www.google.com/recaptcha/api"
-VERIFY_SERVER = "www.google.com"
+VERIFY_SERVER = "https://www.google.com/recaptcha/api/verify"
 
 
 class RecaptchaResponse(object):
-    def __init__(self, is_valid):
+    def __init__(self, is_valid, error_code=None):
         self.is_valid = is_valid
+        self.error_code = error_code
 
 
 def displayhtml(public_key,
-        use_ssl=False, error=None):
+        use_ssl=True, error=None):
     error_param = ''
     if error:
         error_param = '&error=%s' % error
@@ -58,7 +59,7 @@ def submit(recaptcha_challenge_field,
     })
 
     httpresp = urlfetch.fetch(
-        url="https://%s/recaptcha/api/verify" % VERIFY_SERVER,
+        url=VERIFY_SERVER,
         payload=params,
         method=urlfetch.POST,
         headers=headers)
@@ -69,4 +70,6 @@ def submit(recaptcha_challenge_field,
         if return_code == "true":
             return RecaptchaResponse(is_valid=True)
         else:
-            return RecaptchaResponse(is_valid=False)
+            return RecaptchaResponse(is_valid=False, error_code=return_values[1])
+    else:
+        return RecaptchaResponse(is_valid=False, error_code="recaptcha-not-reachable")
