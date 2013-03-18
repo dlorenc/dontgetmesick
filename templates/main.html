@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% block title %}Don't Get Me Sick{% endblock %}
 {% block content %}
+<body>
+<p>To use the services of Don't Get Me Sick, please fill out the following form:</p>
 <form name="SickForm" action="/submit" method="POST" onsubmit="return required()">
     <label>Sick Person's Name:</label>
     <input type="text" name="sick_person_name" {{ sp_name }}>
@@ -10,5 +12,5 @@
     <input type="text" name="boss_email" {{ b_email }}>
     {{ captchahtml }}
     <input type="submit">
-</form>
+</form></body>
 {% endblock %}

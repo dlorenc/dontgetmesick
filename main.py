@@ -18,6 +18,7 @@ import webapp2
 import jinja2
 import os
 import datetime
+import urllib
 from datastore import Sick
 
 from google.appengine.ext import db
@@ -36,10 +37,10 @@ jinja_environment = jinja2.Environment(
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
-        error_code = self.request.get('error')
-        sp_name = 'value="' + self.request.get('sn') + '"'
-        sp_email = 'value="' + self.request.get('se') + '"'
-        b_email = 'value="' + self.request.get('be') + '"'
+        error_code = urllib.unquote(self.request.get('error'))
+        sp_name = 'value="' + urllib.unquote(self.request.get('sn')) + '"'
+        sp_email = 'value="' + urllib.unquote(self.request.get('se')) + '"'
+        b_email = 'value="' + urllib.unquote(self.request.get('be')) + '"'
         chtml = captcha.displayhtml(
             public_key="6Lehdd4SAAAAAGyshD-jrfSNV1bV_InTDmtR62Sn",
             use_ssl=True,
@@ -56,11 +57,10 @@ class SubmitHandler(webapp2.RequestHandler):
         boss_email = self.request.get('boss_email')
         challenge = self.request.get('recaptcha_challenge_field')
         response = self.request.get('recaptcha_response_field')
-        remoteip = environ['REMOTE_ADDR']
+        remote_ip = environ['REMOTE_ADDR']
 
-        response = captcha.submit(challenge, response,
-            "6Lehdd4SAAAAAC0TKPW2gRxaly1HErcicR1Sck5P",
-            remoteip)
+        response = captcha.submit(recaptcha_challenge_field=challenge, recaptcha_response_field=response,
+            private_key="6Lehdd4SAAAAAC0TKPW2gRxaly1HErcicR1Sck5P", remoteip=remote_ip)
 
         if response.is_valid:
             s = Sick(sick_person_name=sick_person_name,
@@ -110,10 +110,10 @@ class SubmitHandler(webapp2.RequestHandler):
             else:
                 self.redirect('/already')
         else:
-            redirect_string = '/?error=%s' % response.error_code
-            redirect_string += '&sn=%s' % sick_person_name
-            redirect_string += '&se=%s' % sick_person_email
-            redirect_string += '&be=%s' % boss_email
+            redirect_string = '/?error=%s' % urllib.quote_plus(response.error_code)
+            redirect_string += '&sn=%s' % urllib.quote_plus(sick_person_name)
+            redirect_string += '&se=%s' % urllib.quote_plus(sick_person_email)
+            redirect_string += '&be=%s' % urllib.quote_plus(boss_email)
             self.redirect(redirect_string)
 
 
