@@ -3,11 +3,11 @@
 {% block content %}
 <form name="SickForm" action="/submit" method="POST" onsubmit="return required()">
     <label>Sick Person's Name:</label>
-    <input type="text" name="sick_person_name">
+    <input type="text" name="sick_person_name" {{ sp_name }}>
     <label>Sick Person's Email:</label>
-    <input type="text" name="sick_person_email">
+    <input type="text" name="sick_person_email" {{ sp_email }}>
     <label>Their Boss's Email:</label>
-    <input type="text" name="boss_email">
+    <input type="text" name="boss_email" {{ b_email }}>
     {{ captchahtml }}
     <input type="submit">
 </form>

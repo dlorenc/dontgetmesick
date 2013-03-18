@@ -36,11 +36,15 @@ jinja_environment = jinja2.Environment(
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
+        error_code = self.request.get('error')
+        sp_name = 'value="' + self.request.get('sn') + '"'
+        sp_email = 'value="' + self.request.get('se') + '"'
+        b_email = 'value="' + self.request.get('be') + '"'
         chtml = captcha.displayhtml(
             public_key="6Lehdd4SAAAAAGyshD-jrfSNV1bV_InTDmtR62Sn",
             use_ssl=True,
-            error=None)
-        context = {'captchahtml': chtml}
+            error=error_code)
+        context = {'captchahtml': chtml, 'sp_name': sp_name, 'sp_email': sp_email, 'b_email': b_email}
         template = jinja_environment.get_template('main.html')
         self.response.out.write(template.render(context))
 
@@ -54,11 +58,11 @@ class SubmitHandler(webapp2.RequestHandler):
         response = self.request.get('recaptcha_response_field')
         remoteip = environ['REMOTE_ADDR']
 
-        cResponse = captcha.submit(challenge, response,
+        response = captcha.submit(challenge, response,
             "6Lehdd4SAAAAAC0TKPW2gRxaly1HErcicR1Sck5P",
             remoteip)
 
-        if cResponse.is_valid:
+        if response.is_valid:
             s = Sick(sick_person_name=sick_person_name,
                 sick_person_email=sick_person_email,
                 boss_email=boss_email)
@@ -106,7 +110,11 @@ class SubmitHandler(webapp2.RequestHandler):
             else:
                 self.redirect('/already')
         else:
-            self.redirect('/failure')
+            redirect_string = '/?error=%s' % response.error_code
+            redirect_string += '&sn=%s' % sick_person_name
+            redirect_string += '&se=%s' % sick_person_email
+            redirect_string += '&be=%s' % boss_email
+            self.redirect(redirect_string)
 
 
 class SuccessHandler(webapp2.RequestHandler):
