@@ -3,7 +3,7 @@
 {% block content %}
 <body>
 <p>To use the services of Don't Get Me Sick, please fill out the following form:</p>
-<img src="assets/img/Sick_at_work.jpg" alt="sick at work" align="right" width=500 height=334 />
+<img src="assets/img/Sick_at_work.jpg" alt="sick at work" align="right" width=500 height=334 style="margin:0px 75px"/>
 <form name="SickForm" action="/submit" method="POST" onsubmit="return required()">
     <label>Sick Person's Name:</label>
     <input type="text" name="sick_person_name" {{ sp_name }}>
@@ -12,6 +12,6 @@
     <label>Their Boss's Email:</label>
     <input type="text" name="boss_email" {{ b_email }}>
     {{ captchahtml }}
-    <input type="submit">
+    <input type="submit" value="Submit Request">
 </form></body>
 {% endblock %}
