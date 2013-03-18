@@ -124,13 +124,6 @@ class SuccessHandler(webapp2.RequestHandler):
         self.response.out.write(template.render(context))
 
 
-class FailureHandler(webapp2.RequestHandler):
-    def get(self):
-        context = {}
-        template = jinja_environment.get_template('failure.html')
-        self.response.out.write(template.render(context))
-
-
 class OverageHandler(webapp2.RequestHandler):
     def get(self):
         context = {}
@@ -163,7 +156,6 @@ app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/submit', SubmitHandler),
     ('/success', SuccessHandler),
-    ('/failure', FailureHandler),
     ('/already', AlreadyHandler),
     ('/overage', OverageHandler),
     ('/about', AboutHandler),
