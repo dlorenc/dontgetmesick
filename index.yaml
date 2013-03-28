@@ -12,6 +12,6 @@ indexes:
 
 - kind: Sick
   properties:
-  - name: sick_person_email=
+  - name: sick_person_email
   - name: date
     direction: desc
