@@ -63,12 +63,12 @@ class SubmitHandler(webapp2.RequestHandler):
             private_key="6Lehdd4SAAAAAC0TKPW2gRxaly1HErcicR1Sck5P", remoteip=remote_ip)
 
         if response.is_valid:
-            s = Sick(sick_person_name=sick_person_name,
-                sick_person_email=sick_person_email,
-                boss_email=boss_email)
+            s = Sick(sick_person_name_ds=sick_person_name,
+                sick_person_email_ds=sick_person_email,
+                boss_email_ds=boss_email)
 
-            q = db.Query(Sick).filter('sick_person_email =',
-                db.Email(sick_person_email)).order('-date')
+            q = db.Query(Sick).filter('sick_person_email_ds =',
+                sick_person_email).order('-date_ds')
 
             result = q.get()
             s.put()
