@@ -72,7 +72,7 @@ class SubmitHandler(webapp2.RequestHandler):
 
             result = q.get()
             s.put()
-            if ((result is None) or (datetime.datetime.now() - result.date) > datetime.timedelta(hours=8)):
+            if ((result is None) or (datetime.datetime.now() - result.date_ds) > datetime.timedelta(hours=8)):
                 try:
                     mail.send_mail(sender="Don't Get Me Sick <dlorenc@dontgetmesick.com>",
                         to="%s <%s>" % (sick_person_name, sick_person_email),
