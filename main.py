@@ -41,12 +41,11 @@ class MainHandler(webapp2.RequestHandler):
         sp_name = 'value="' + urllib.unquote(self.request.get('sn')) + '"'
         sp_email = 'value="' + urllib.unquote(self.request.get('se')) + '"'
         b_email = 'value="' + urllib.unquote(self.request.get('be')) + '"'
+        error_message = "<p>" + urllib.unquote(self.request.get('er')) + "</p>"
         chtml = captcha.displayhtml(
             public_key="6Lehdd4SAAAAAGyshD-jrfSNV1bV_InTDmtR62Sn",
             use_ssl=True,
             error=error_code)
-        if (self.request.get('er') == 1):
-            error_message = '<p>An error occured while trying to send the emails, please try resubmitting</p>'
         context = {'captchahtml': chtml, 'sp_name': sp_name, 'sp_email': sp_email, 'b_email': b_email, 'error_message': error_message}
         template = jinja_environment.get_template('main.html')
         self.response.out.write(template.render(context))
@@ -110,10 +109,11 @@ class SubmitHandler(webapp2.RequestHandler):
                 except apiproxy_errors.OverQuotaError:
                     self.redirect('/overage')
                 except apiproxy_errors.DeadlineExceededError:
+                    DEE_message = "An error occured while trying to send the emails, please try resubmitting"
                     redirect_string = '/?sn=%s' % urllib.quote_plus(sick_person_name)
                     redirect_string += '&se=%s' % urllib.quote_plus(sick_person_email)
                     redirect_string += '&be=%s' % urllib.quote_plus(boss_email)
-                    redirect_string += '&er=1'
+                    redirect_string += '&er=%s' % urllib.quote_plus(DEE_message)
                     self.redirect(redirect_string)
             else:
                 self.redirect('/already')
@@ -167,5 +167,5 @@ app = webapp2.WSGIApplication([
     ('/already', AlreadyHandler),
     ('/overage', OverageHandler),
     ('/about', AboutHandler),
-    ('/contact', ContactHandler)
+    ('/contact', ContactHandler),
 ], debug=True)
