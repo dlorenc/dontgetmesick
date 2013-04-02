@@ -45,7 +45,9 @@ class MainHandler(webapp2.RequestHandler):
             public_key="6Lehdd4SAAAAAGyshD-jrfSNV1bV_InTDmtR62Sn",
             use_ssl=True,
             error=error_code)
-        context = {'captchahtml': chtml, 'sp_name': sp_name, 'sp_email': sp_email, 'b_email': b_email}
+        if (self.request.get('er') == 1):
+            error_message = '<p>An error occured while trying to send the emails, please try resubmitting</p>'
+        context = {'captchahtml': chtml, 'sp_name': sp_name, 'sp_email': sp_email, 'b_email': b_email, 'error_message': error_message}
         template = jinja_environment.get_template('main.html')
         self.response.out.write(template.render(context))
 
@@ -107,6 +109,12 @@ class SubmitHandler(webapp2.RequestHandler):
                     self.redirect('/success')
                 except apiproxy_errors.OverQuotaError:
                     self.redirect('/overage')
+                except apiproxy_errors.DeadlineExceededError:
+                    redirect_string = '/?sn=%s' % urllib.quote_plus(sick_person_name)
+                    redirect_string += '&se=%s' % urllib.quote_plus(sick_person_email)
+                    redirect_string += '&be=%s' % urllib.quote_plus(boss_email)
+                    redirect_string += '&er=1'
+                    self.redirect(redirect_string)
             else:
                 self.redirect('/already')
         else:
